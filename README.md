@@ -2,7 +2,7 @@
 
 This is a Snakemake pipeline for scalable maximum likelihood (ML) phylogenetic analysis using RAxML-NG and the associated tools. This pipeline is slower than IQ-TREE-based phylogenies, but is much more comprehensive and performs much better in terms of accuracy, especially in difficult-to-analyze datasets.
 
-It includes producing and editing the multiple sequence alignment (MSA), and using the modified MSA for maximum likelihood phylogenetic analysis.
+This workflow performs all needed steps sequentially, from MSA to model selection and phylogeny inference.
 
 Wildcard is {identifier}.fasta
 
