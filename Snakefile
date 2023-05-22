@@ -26,7 +26,7 @@ rule trimal:
 rule convert:
      input: "all_genes.aln.trimmed"
      output:"all_genes.aln.trimmed.phy"
-     shell: "/home/iasonas/bin/convert.sh {input} > {output}"
+     shell: "./aln2phylip.sh {input} > {output}"
 
 rule pythia:
      input: "all_genes.aln.trimmed.phy"
@@ -47,4 +47,4 @@ rule raxml:
 rule midpoint_root:
      input: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed","all_genes.trimmed.aln.phy.raxml.support"
      output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-     shell: "python /home/iasonas/bin/midpoint.py {input}"
+     shell: "python3 midpoint.py {input}"
