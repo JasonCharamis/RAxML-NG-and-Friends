@@ -31,7 +31,7 @@ rule convert:
 rule pythia:
      input: "all_genes.aln.trimmed.phy"
      output: "all_genes.aln.pythia.out"
-     shell: "pythia --msa {input} -r /home/iasonas/Programs/raxml-ng/bin/raxml-ng --removeDuplicates -o all_genes.aln.pythia.out"
+     shell: "pythia --msa {input} -r /home/iasonas/Programs/raxml-ng/bin/raxml-ng --removeDuplicates -o {output}"
 
 rule modeltest:
      input: "all_genes.aln.trimmed.phy","all_genes.aln.pythia.out"
@@ -39,12 +39,14 @@ rule modeltest:
      shell: "modeltest-ng -i {input[0]} -d aa -t ml -c -T raxml"
 
 rule raxml:
-     input: "all_genes.aln.trimmed.phy","all_genes.aln.pythia.out","all_genes.trimmed.aln.phy.out"
-     output: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed"
+     input: msa="all_genes.aln.trimmed.phy",
+            pythia="all_genes.aln.pythia.out",
+            modeltest="all_genes.trimmed.aln.phy.out"
+     output: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed","all_genes.trimmed.aln.phy.raxml.support"
      shell: "MODEL=`grep -P "\sBIC" all_genes.pep.aln.trimmed.phy.log | grep -v "Best" | sed 's/.*               //g' | sed 's/ .*//g'` && 
-            raxml-ng-mpi --all --msa all_genes.trimmed.aln.phy --model $MODEL --tree rand{10},pars{90} --threads 40"
+            raxml-ng-mpi --all --msa {input.msa} --model $MODEL --tree rand{10},pars{90} --threads 40"
 
 rule midpoint_root:
      input: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed","all_genes.trimmed.aln.phy.raxml.support"
      output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-     shell: "python3 midpoint.py {input}"
+     shell: "python3 midpoint.py {input[0]}"
