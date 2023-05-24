@@ -1,6 +1,6 @@
 **Scalable RAxML-NG-based phylogenetic analysis using Snakemake**
 
-This is a Snakemake pipeline for scalable maximum likelihood (ML) phylogenetic analysis using RAxML-NG and the associated tools. This pipeline is considerbly slower than the IQ-TREE-based one, but is much better in terms of accuracy, especially in difficult-to-analyze datasets.
+This is a Snakemake workflow for running scalable maximum likelihood (ML) phylogenetic analysis using RAxML-NG and associated tools (Pythia, ModelTest-NG). This workflow is considerably slower than the IQ-TREE-based one, but is much better in terms of accuracy, especially in difficult-to-analyze datasets.
 
 This workflow performs all needed steps sequentially, from MSA to model selection and phylogeny inference.
 
