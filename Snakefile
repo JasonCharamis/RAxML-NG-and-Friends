@@ -31,7 +31,7 @@ rule convert:
 rule pythia:
      input: "all_genes.aln.trimmed.phy"
      output: "all_genes.aln.pythia.out"
-     shell: "pythia --msa {input} -r /home/iasonas/Programs/raxml-ng/bin/raxml-ng --removeDuplicates -o {output}"
+     shell: "pythia --msa {input} -r raxml-ng/bin/raxml-ng --removeDuplicates -o {output}"
 
 rule modeltest:
      input: "all_genes.aln.trimmed.phy","all_genes.aln.pythia.out"
