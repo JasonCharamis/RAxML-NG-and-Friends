@@ -4,7 +4,6 @@ This is a Snakemake workflow for running scalable maximum likelihood (ML) phylog
 
 This workflow performs all steps sequentially, from MSA to model selection and phylogeny inference.
 
-Wildcard is {identifier}.fasta
 
 Usage:
 
