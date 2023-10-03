@@ -1,12 +1,9 @@
 seq = { f[:-6] for f in os.listdir(".") if f.endswith(".fasta") }
 
 rule all:
-     input: "all_genes.aln",
-            "all_genes.aln.trimmed",
-            "all_genes.aln.trimmed.phy",
-            "all_genes.aln.pythia.out",
-            "all_genes.trimmed.aln.phy.raxml.support",
-            "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
+     input:
+        "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted",
+	   "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
 
 rule concatenate:
      input: expand ("{seq}.fasta", seq=seq)
