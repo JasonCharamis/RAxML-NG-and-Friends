@@ -39,14 +39,17 @@ rule modeltest:
      shell: "modeltest-ng -i {input[0]} -d aa -t ml -c -T raxml"
 
 rule raxml:
-     input: msa="all_genes.aln.trimmed.phy",
-            pythia="all_genes.aln.pythia.out",
-            modeltest="all_genes.trimmed.aln.phy.out"
-     output: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed","all_genes.trimmed.aln.phy.raxml.support"
-     shell: "MODEL=`grep -P "\sBIC" all_genes.pep.aln.trimmed.phy.log | grep -v "Best" | sed 's/.*               //g' | sed 's/ .*//g'` && 
-            raxml-ng-mpi --all --msa {input.msa} --model $MODEL --tree rand{10},pars{90} --threads 40"
+     input: "all_genes.aln.pythia.out"
+     output: "all_genes.trimmed.aln.phy.raxml.support"
+     shell: """ /home/iasonas/Programs/raxml-ng/bin/raxml-ng-mpi --all --msa all_genes.aln.trimmed.phy --model LG+G4 --tree rand{{10}},pars{{90}} --threads 40 --workers auto """
 
 rule midpoint_root:
-     input: "all_genes.trimmed.aln.phy.raxml.bestTreeCollapsed","all_genes.trimmed.aln.phy.raxml.support"
+     input: "all_genes.trimmed.aln.phy.raxml.support"
      output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-     shell: "python3 midpoint.py {input[0]}"
+     shell: "python scripts/ETElib.py --midpoint --tree {input}"
+
+rule visualize_tree:
+     input: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
+     output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
+     shell: "python3 scripts/ETElib.py --visualize --tree {input}"
+
