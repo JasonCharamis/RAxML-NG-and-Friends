@@ -23,7 +23,7 @@ rule trimal:
 rule convert:
      input: "all_genes.aln.trimmed"
      output:"all_genes.aln.trimmed.phy"
-     shell: "./aln2phylip.sh {input} > {output}"
+     shell: "scripts/aln2phylip.sh {input} > {output}"
 
 rule pythia:
      input: "all_genes.aln.trimmed.phy"
