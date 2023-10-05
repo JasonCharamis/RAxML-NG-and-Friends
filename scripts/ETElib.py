@@ -56,7 +56,7 @@ def count_leaves ( tree ):
         
     
 ## main visualization function for leaf coloring and bootstrap support ##
-def visualize_tree(tree, layout = "c"):
+def visualize_tree(tree, layout = "c", show = "FALSE"):
     t=Tree(tree)
 
     ts = TreeStyle()
@@ -115,7 +115,9 @@ def visualize_tree(tree, layout = "c"):
 
 
     t.render(tree+".svg", w=500, units="mm", tree_style=ts)
-#    t.show(tree_style=ts)
+
+    if show == "TRUE":
+        t.show(tree_style=ts)
 
     return
 
@@ -156,41 +158,6 @@ def count_descendant_leaves_by_taxon ( tree, node, taxon_ID ):
 
     print ("You have", len(descendant_leaves), "descendant leaves for", taxon_ID )
     return
-
-
-## Replace geneids in newick with names from a gene ID list ##
-
-def fasta_names ( fasta ):
-    gene_names = {}
-    fasta=fasta.strip ("\n")
-    id=re.sub(">|_.*","",fasta)
-    name=re.sub(">|/","",fasta)
-    gene_names[id]=name
-    return gene_names
-
-def get_newick(node):   
-    if node.is_leaf():
-        return f"{node.name}:{node.dist}"
-    
-    else:
-        children_newick = ",".join([get_newick(child) for child in node.children])
-
-        if hasattr(node, "support"):
-            return f"({children_newick}){node.name}:{node.dist}[&support={node.support}]"
-        else:
-            return f"({children_newick}){node.name}:{node.dist}"
-
-    return f"({children_newick}){node.name}:{node.dist}"
-    
-def sub_names_nwk( newick ):  
-    t=Tree(newick)
-
-    for node in t.traverse("postorder"):
-        if node.is_leaf():
-            if re.search("^g",node.name):
-                node.name = "Lutzomyia_longipalpis_"+node.name
-
-    return t.write(format=5)
 
 
 ## Implementation ##
