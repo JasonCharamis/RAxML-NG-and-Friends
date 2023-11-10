@@ -22,12 +22,12 @@ rule trimal:
 rule convert:
      input: "all_genes.aln.trimmed"
      output:"all_genes.aln.trimmed.phy"
-     shell: "/home/iasonas/bin/convert.sh {input} > {output}"
+     shell: "scripts/convert.sh {input} > {output}"
 
 rule pythia:
      input: "all_genes.aln.trimmed.phy"
      output: "all_genes.aln.pythia.out"
-     shell: "pythia --msa {input} -r /home/iasonas/Programs/raxml-ng/bin/raxml-ng-mpi --removeDuplicates -o {output}"
+     shell: "pythia --msa {input} -r raxml-ng-mpi --removeDuplicates -o {output}"
 
 rule modeltest:
      input: "all_genes.aln.trimmed.phy","all_genes.aln.pythia.out"
@@ -39,14 +39,14 @@ rule raxml:
      output: "all_genes.trimmed.aln.phy.raxml.support"
      threads: config['threads']
      params: rtn=config['random_tree_number'], ptn=config['parsimony_tree_number']
-     shell: """ /home/iasonas/Programs/raxml-ng/bin/raxml-ng-mpi --all --msa all_genes.aln.trimmed.phy --model LG+G4 --tree rand{{{params.rtn}}},pars{{{params.ptn}}} --threads {threads} --workers auto """
+     shell: """ raxml-ng-mpi --all --msa all_genes.aln.trimmed.phy --model LG+G4 --tree rand{{{params.rtn}}},pars{{{params.ptn}}} --threads {threads} --workers auto """
 
 rule midpoint_root:
      input: "all_genes.trimmed.aln.phy.raxml.support"
      output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-     shell: "python /home/iasonas/bin/midpoint.py {input[0]}"
+     shell: "python3 scripts/ETElib.py --tree {input[0]} --midpoint"
 
 rule visualize_tree:
      input: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
      output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
-     shell: "conda activate ete && python3 /home/iasonas/bin/ETElib.py --visualize --tree {input}"
+     shell: "conda activate ete && python3 scripts/ETElib.py --tree {input} --visualize"
