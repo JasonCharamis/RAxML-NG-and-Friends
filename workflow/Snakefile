@@ -65,10 +65,8 @@ rule model_test:
 			 -T raxml """
 
 rule raxml:
-    input:
-        pythia="all_genes.aln.pythia.out",
-        modeltest="all_genes.trimmed.aln.phy.raxml.bestModel"
-
+    input: pythia="all_genes.aln.pythia.out",
+           modeltest="all_genes.trimmed.aln.phy.raxml.bestModel"
     output: "all_genes.trimmed.aln.phy.raxml.support"
     threads: config['raxmlng_threads']
     conda: "envs/phylo.yaml"
@@ -94,6 +92,7 @@ rule midpoint_root:
             subprocess.run(["python3", "scripts/ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
         else:
             subprocess.run(["cp", "all_genes.trimmed.aln.phy.raxml.support", "all_genes.trimmed.aln.phy.raxml.support.tree"])
+
 
 rule visualize_tree:
     input: "all_genes.trimmed.aln.phy.raxml.support.tree"
