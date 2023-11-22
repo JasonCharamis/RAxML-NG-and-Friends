@@ -32,11 +32,10 @@ http://etetoolkit.org/
 1. git clone https://github.com/JasonCharamis/Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis.git
 2. cd workflow/ && docker build -t automated_phylogenetic analysis . 
 3. Travel to the directory where you have the desired fasta files (better only those)
-
-Run (may need sudo rights):
 4. docker run -it -v `pwd`:/workflow -w /workflow automated_phylogenetic_analysis snakemake --use-conda --snakefile Snakemake-workflow-for-RAxML-NG-based-phylogenetic-  
    analysis/workflow/Snakefile --cores 20
 
+The last step may require sudo rights.
 Of course, to customize the run edit the config/config.yaml file. 
 
 That's it! The pipeline will run automatically.
