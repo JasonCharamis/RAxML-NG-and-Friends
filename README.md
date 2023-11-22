@@ -29,6 +29,5 @@ ETE3
 http://etetoolkit.org/
 
 Moreover, the workflow is fully containerized. To build, run:
-
-cd workflow/ 
+cd workflow/
 docker build .
