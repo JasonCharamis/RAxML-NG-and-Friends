@@ -1,4 +1,4 @@
-import os, subprocess
+   import os, subprocess
 
 def find_workflow_path():
     result = subprocess.run(["find", ".", "-type", "d", "-name", "Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis"], capture_output=True, text=True)
@@ -8,10 +8,11 @@ configfile: re.sub("\s+","", str(find_workflow_path() + "/config/config.yaml") )
 
 seqs = {f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa"))}
 
+
 rule all:
     input:
-        "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted",
-        "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
+        "all_genes.trimmed.aln.phy.raxml.support.tree",
+        "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
 
 rule concatenate:
     input: seqs=seqs
@@ -64,33 +65,37 @@ rule model_test:
 			 -T raxml """
 
 rule raxml:
-     input: pythia="all_genes.aln.pythia.out",
-     	    modeltest="all_genes.trimmed.aln.phy.raxml.bestModel"
-	    
-     output: "all_genes.trimmed.aln.phy.raxml.support"
-     threads: config['raxmlng_threads']
-     conda: "envs/phylo.yaml"
-     params: rtn=config['random_tree_number'],
-     	     ptn=config['parsimony_tree_number'],
-	     outgroup=config['outgroup']
-	     
-     shell: """ BEST_MODEL=$(sed 's/.\{{.*//g' all_genes.trimmed.aln.phy.raxml.bestModel) &&
+    input:
+        pythia="all_genes.aln.pythia.out",
+        modeltest="all_genes.trimmed.aln.phy.raxml.bestModel"
 
-     	        raxml-ng --all 
-            		 --msa all_genes.aln.trimmed.phy 
-			 --model $BEST_MODEL
-			 --tree rand{{{params.rtn}}}, pars{{{params.ptn}}} 
-			 --outgroup {params.outgroup} 
-			 --threads {threads} 
-			 --workers auto """
+    output: "all_genes.trimmed.aln.phy.raxml.support"
+    threads: config['raxmlng_threads']
+    conda: "envs/phylo.yaml"
+    params:
+        rtn=config['random_tree_number'],
+        ptn=config['parsimony_tree_number'],
+        outgroup=config['outgroup']
+
+    shell: """ best_model=$(sed 's/.{{.*//g' all_genes.trimmed.aln.phy.raxml.bestModel)
+    	       raxml-ng --all \
+               		--msa all_genes.aln.trimmed.phy \
+			--model $best_model \
+			--tree rand{{params.rtn}}, pars{{params.ptn}} \
+			--threads {threads} \
+			--workers auto \
+			{{("--outgroup " + params.outgroup) if params.outgroup else ""}} """
 
 rule midpoint_root:
     input: "all_genes.trimmed.aln.phy.raxml.support"
-    output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-    shell: """ python3 scripts/ETElib.py --tree {input} --midpoint """
-
+    output: "all_genes.trimmed.aln.phy.raxml.support.tree"
+    run:
+        if not config['outgroup']:
+            subprocess.run(["python3", "scripts/ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
+        else:
+            subprocess.run(["cp", "all_genes.trimmed.aln.phy.raxml.support", "all_genes.trimmed.aln.phy.raxml.support.tree"])
 
 rule visualize_tree:
-    input: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted"
-    output: "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
+    input: "all_genes.trimmed.aln.phy.raxml.support.tree"
+    output: "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
     shell: """ python3 scripts/ETElib.py --tree {input} --visualize """
