@@ -1,0 +1,10 @@
+name: phylo
+channels:
+    - conda-forge
+    - bioconda
+dependencies:
+    - mafft
+    - trimal
+    - pypythia
+    - modeltest-ng
+    - raxml-ng
