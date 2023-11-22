@@ -25,7 +25,6 @@ rule mafft:
     conda: "envs/phylo.yaml"
     shell: "mafft --auto {input.all_fasta} > {output.aln}"
 
-
 rule trimal:
     input: aln="all_genes.aln"
     output: trm="all_genes.aln.trimmed"
@@ -35,7 +34,6 @@ rule trimal:
     	       	      -out {output.trm} 
 		      -fasta 
 		      -gt {params.thr} """
-
 rule convert:
     input: trm="all_genes.aln.trimmed"
     output: phy="all_genes.aln.trimmed.phy"
@@ -51,7 +49,6 @@ rule pythia:
     	   	   -r raxml-ng 
 		   --removeDuplicates 
 		   -o {output} """
-
 
 rule model_test:
     input: phy="all_genes.aln.trimmed.phy", pythia="all_genes.aln.pythia.out"
