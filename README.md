@@ -2,14 +2,13 @@
 
 This is a Snakemake workflow for running scalable maximum likelihood (ML) phylogenetic analysis using RAxML-NG and associated tools (Pythia, ModelTest-NG). This workflow is considerably slower than the IQ-TREE-based one, but is much better in terms of accuracy, especially in difficult-to-analyze datasets.
 
-This workflow performs all steps sequentially, from MSA to model selection and phylogeny inference.
-
+This workflow performs all steps sequentially, from MSA to model selection and phylogeny inference. 
+To include custom options, edit the config/config.yaml file.
 
 Usage:
+snakemake --cores 20 --snakefile Snakefile
 
-snakemake --cores 10 --snakefile Snakefile
-
-Dependencies:
+All dependencies are downloaded and installed through conda.
 
 Mafft
 https://github.com/GSLBiotech/mafft
@@ -28,3 +27,8 @@ https://github.com/amkozlov/raxml-ng
 
 ETE3
 http://etetoolkit.org/
+
+Moreover, the workflow is fully containerized. To build, run:
+
+cd workflow/ 
+docker build .
