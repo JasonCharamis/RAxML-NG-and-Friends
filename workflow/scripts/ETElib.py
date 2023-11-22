@@ -152,7 +152,7 @@ def midpoint(input):
 
     ## set midpoint root as outgroup ##
     tree.set_outgroup(midpoint)
-    tree.write(format=1, outfile=input+".midpointed")
+    tree.write(format=1, outfile=input+".tree")
     return
 
 
