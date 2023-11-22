@@ -84,7 +84,7 @@ rule raxml:
 			--tree rand{{params.rtn}}, pars{{params.ptn}} \
 			--threads {threads} \
 			--workers auto \
-			{{("--outgroup " + params.outgroup) if params.outgroup else ""}} """
+			{{("--outgroup " + {params.outgroup}) if {params.outgroup} else ""}} """
 
 rule midpoint_root:
     input: "all_genes.trimmed.aln.phy.raxml.support"
