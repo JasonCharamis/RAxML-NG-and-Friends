@@ -1,4 +1,12 @@
-configfile: "../config/config.yaml"
+import os, subprocess
+
+def find_workflow_path():
+    result = subprocess.run(["find", ".", "-type", "d", "-name", "Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis"], capture_output=True, text=True)
+    return result.stdout.strip('\n')
+
+configfile: re.sub("\s+","", str(find_workflow_path() + "/config/config.yaml") )
+
+seqs = {f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa"))}
 
 rule all:
     input:
@@ -6,9 +14,9 @@ rule all:
         "all_genes.trimmed.aln.phy.raxml.support.midpoint_rooted.svg"
 
 rule concatenate:
+    input: seqs=seqs
     output: all_fasta="all_genes.fasta"
-    shell: "cat *.fa* > {output.all_fasta}"
-
+    shell: """ cat {input.seqs} > {output.all_fasta} """
 
 rule mafft:
     input: all_fasta="all_genes.fasta"
@@ -71,7 +79,7 @@ rule raxml:
      	        raxml-ng --all 
             		 --msa all_genes.aln.trimmed.phy 
 			 --model $BEST_MODEL
-			 --tree rand{{params.rtn}}, pars{{params.ptn}} 
+			 --tree rand{{{params.rtn}}}, pars{{{params.ptn}}} 
 			 --outgroup {params.outgroup} 
 			 --threads {threads} 
 			 --workers auto """
