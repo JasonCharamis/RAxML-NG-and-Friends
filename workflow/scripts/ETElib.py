@@ -1,9 +1,10 @@
+## Author: Jason Charamis
+## Collection of functions to manipulate and visualize phylogenetic trees using the ETE3 toolkit ##
+
 import seaborn as sns
 from ete3 import Tree, TreeStyle, NodeStyle, TextFace
 import re, random, os
 import argparse
-
-## Collection of functions to manipulate and visualize phylogenetic trees using the ETE3 toolkit ##
 
 def parse_arguments():
     # Parse command-line arguments
