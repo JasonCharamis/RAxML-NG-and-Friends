@@ -88,7 +88,7 @@ rule midpoint_root:
     output: "all_genes.trimmed.aln.phy.raxml.support.tree"
     run:
         if not config['outgroup']:
-            subprocess.run(["python3", "scripts/ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
+            subprocess.run(["python3", "ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
         else:
             subprocess.run(["cp", "all_genes.trimmed.aln.phy.raxml.support", "all_genes.trimmed.aln.phy.raxml.support.tree"])
 
@@ -96,4 +96,4 @@ rule midpoint_root:
 rule visualize_tree:
     input: "all_genes.trimmed.aln.phy.raxml.support.tree"
     output: "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
-    shell: """ python3 scripts/ETElib.py --tree {input} --visualize """
+    shell: """ python3 ETElib.py --tree {input} --visualize """
