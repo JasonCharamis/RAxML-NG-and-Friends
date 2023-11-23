@@ -1,8 +1,9 @@
 import os, subprocess
 
 def find_workflow_path():
-    result = subprocess.run(["find", ".", "-type", "d", "-name", "Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis"], capture_output=True, text=True)
-    return result.stdout.strip('\n')
+    home_directory = os.path.expanduser("~")
+    result = subprocess.run(["find", home_directory, "-type", "d", "-name", "Qute"], capture_output=True, text=True)
+    return result.stdout
 
 configfile: re.sub("\s+","", str(find_workflow_path() + "/config/config.yaml") )
 
