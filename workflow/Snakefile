@@ -2,11 +2,10 @@ import os, subprocess
 
 def find_workflow_path():
     home_directory = os.path.expanduser("~")
-    result = subprocess.run(["find", home_directory, "-type", "d", "-name", "Qute"], capture_output=True, text=True)
-    first_hit = result.stdout.splitlines()[0] if result.stdout else None
-    return first_hit
+    result = subprocess.run(["find", home_directory, "-type", "d", "-name", re.sub("/workflow.","", os.getcwd())], capture_output=True, text=True)
+    return re.sub(".*/workflow","/workflow",result.stdout)
 
-configfile: re.sub("\s+","", str(find_workflow_path() + "/config/config.yaml") )
+configfile: re.sub("\s+","", str(find_workflow_path())+"/config/config.yaml")
 
 seqs = {f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa"))}
 
