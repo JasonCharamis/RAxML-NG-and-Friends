@@ -45,6 +45,6 @@ ENV PATH="/conda-envs/e7731bb49f40c7aec2d59fb33378cd57/bin:$PATH"
 # Step 5: Download repository and put scripts on PATH
 RUN git clone https://github.com/JasonCharamis/Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis.git
 
-ENV PATH="Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis/scripts:$PATH"
+ENV PATH="Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis/workflow/scripts:$PATH"
 
 CMD ["echo","$PATH"]
