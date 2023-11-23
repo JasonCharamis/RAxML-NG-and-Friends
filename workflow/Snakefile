@@ -3,7 +3,8 @@ import os, subprocess
 def find_workflow_path():
     home_directory = os.path.expanduser("~")
     result = subprocess.run(["find", home_directory, "-type", "d", "-name", "Qute"], capture_output=True, text=True)
-    return result.stdout
+    first_hit = result.stdout.splitlines()[0] if result.stdout else None
+    return first_hit
 
 configfile: re.sub("\s+","", str(find_workflow_path() + "/config/config.yaml") )
 
@@ -31,9 +32,9 @@ rule trimal:
     output: trm="all_genes.aln.trimmed"
     params: thr=config['trimal_threshold']
     conda: "envs/phylo.yaml"
-    shell: """ trimal -in {input.aln} 
-    	       	      -out {output.trm} 
-		      -fasta 
+    shell: """ trimal -in {input.aln} \
+    	       	      -out {output.trm} \ 
+		      -fasta \
 		      -gt {params.thr} """
 rule convert:
     input: trm="all_genes.aln.trimmed"
@@ -46,21 +47,21 @@ rule pythia:
     input: phy="all_genes.aln.trimmed.phy"
     output: "all_genes.aln.pythia.out"
     conda: "envs/phylo.yaml"
-    shell: """ pythia --msa {input.phy} 
-    	   	   -r raxml-ng 
-		   --removeDuplicates 
-		   -o {output} """
+    shell: """ pythia --msa {input.phy} \
+       	   	      -r raxml-ng \
+		      --removeDuplicates \
+		      -o {output} """
 
 rule model_test:
     input: phy="all_genes.aln.trimmed.phy", pythia="all_genes.aln.pythia.out"
     output: "all_genes.trimmed.aln.phy.raxml.bestModel"
     params: type=config['type']
     conda: "envs/phylo.yaml"
-    shell: """ modeltest-ng -i {input.phy} 
-    	   		 -d {params.type} 
-			 -t ml 
-			 -c 
-			 -T raxml """
+    shell: """ modeltest-ng -i {input.phy} \ 
+    	       		    -d {params.type} \ 
+			    -t ml \
+			    -c \
+			    -T raxml """
 
 rule raxml:
     input: pythia="all_genes.aln.pythia.out",
