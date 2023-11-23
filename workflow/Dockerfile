@@ -7,7 +7,9 @@ LABEL io.github.snakemake.conda_env_hash="1dffc5147149cba73e037f03ff8793aa49d669
 # Step 1: Install the essentials
 
 RUN apt-get update &&\
-    apt-get install build-essential -y
+    apt-get install -f -y &&\
+    apt-get install build-essential -y &&\
+    apt-get install git -y
 
 # Step 2: Retrieve conda environments
 
@@ -40,4 +42,9 @@ RUN /conda-envs/e7731bb49f40c7aec2d59fb33378cd57/bin/pip install snakemake
 
 ENV PATH="/conda-envs/e7731bb49f40c7aec2d59fb33378cd57/bin:$PATH"
 
-CMD ["snakemake", "--version"]
+# Step 5: Download repository and put scripts on PATH
+RUN git clone https://github.com/JasonCharamis/Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis.git
+
+ENV PATH="Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis/scripts:$PATH"
+
+CMD ["echo","$PATH"]
