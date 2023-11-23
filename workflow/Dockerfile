@@ -47,4 +47,4 @@ RUN git clone https://github.com/JasonCharamis/Snakemake-workflow-for-RAxML-NG-b
 
 ENV PATH="Snakemake-workflow-for-RAxML-NG-based-phylogenetic-analysis/workflow/scripts:$PATH"
 
-CMD ["echo","$PATH"]
+CMD ["Everything installed!"]
