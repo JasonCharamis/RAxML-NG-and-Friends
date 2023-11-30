@@ -39,7 +39,7 @@ rule convert:
     input: trm="all_genes.aln.trimmed"
     output: phy="all_genes.aln.trimmed.phy"
     message: "Converting trimmed alignment to phy"
-    shell: "python3 scripts/ETElib.py --alignment {input.trm}"
+    shell: "python3 ETElib.py --alignment {input.trm}"
 
 
 rule pythia:
@@ -86,7 +86,7 @@ rule midpoint_root:
     input: "all_genes.trimmed.aln.phy.raxml.support"
     output: "all_genes.trimmed.aln.phy.raxml.support.tree"
     run:
-        if not config['outgroup']:
+        if not re.search ("\w", config['outgroup']):
             subprocess.run(["python3", "ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
         else:
             subprocess.run(["cp", "all_genes.trimmed.aln.phy.raxml.support", "all_genes.trimmed.aln.phy.raxml.support.tree"])
