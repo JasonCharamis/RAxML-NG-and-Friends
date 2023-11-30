@@ -1,8 +1,10 @@
 ## Dockerfile to build Docker image for this Snakemake workflow.
 
 FROM condaforge/mambaforge:latest
-LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="1dffc5147149cba73e037f03ff8793aa49d669d6249b3ec0b1d3f135fa60c7bd"
+LABEL maintainer = "Jason Charamis" 
+LABEL contact    = "jason.charamis@gmail.com"
+LABEL build_date = "2023-11-30"
+LABEL version    = "v.0.0.1-dev"
 
 # Step 1: Install the essentials
 
