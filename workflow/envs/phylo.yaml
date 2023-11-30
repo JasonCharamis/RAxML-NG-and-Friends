@@ -8,3 +8,7 @@ dependencies:
     - pypythia
     - modeltest-ng
     - raxml-ng
+
+env:
+    PATH:
+        - scripts/
