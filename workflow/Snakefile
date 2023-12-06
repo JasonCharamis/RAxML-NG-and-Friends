@@ -3,6 +3,8 @@ import re
 import subprocess
 
 
+include: "snakemake_utils.smk"
+
 ###=============================================================== Snakemake Pipeline =========================================================================###
 
 if is_docker():
