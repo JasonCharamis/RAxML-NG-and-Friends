@@ -7,11 +7,6 @@ include: "snakemake_utils.smk"
 
 ###=============================================================== Snakemake Pipeline =========================================================================###
 
-if is_docker():
-     configfile: str( re.sub ("workflow.*","", find_repository_name(start_dir=".")) ) + "/config/config.yaml"
-else:
-     configfile: str( find_workflow_path(dir=".")) + "config/config.yaml"
-
 
 seqs = {f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa"))}
 
@@ -36,36 +31,27 @@ rule trimal:
     output: trm="all_genes.aln.trimmed"
     params: thr=config['trimal_threshold']
     conda: "envs/phylo.yaml"
-    shell: """ trimal -in {input.aln} \
-    	       	      -out {output.trm} \ 
-		      -fasta \
-		      -gt {params.thr} """
+    shell: """ trimal -in {input.aln} -out {output.trm} -fasta -gt {params.thr} """
+
 rule convert:
     input: trm="all_genes.aln.trimmed"
     output: phy="all_genes.aln.trimmed.phy"
     message: "Converting trimmed alignment to phy"
-    shell: "python3 ETElib.py --alignment {input.trm}"
-
+    shell: "python3 /home/iasonas/snakemake/RAxML-NG-and-Friends/workflow/scripts/ETElib.py --alignment {input.trm}"
 
 rule pythia:
     input: phy="all_genes.aln.trimmed.phy"
     output: "all_genes.aln.pythia.out"
     conda: "envs/phylo.yaml"
-    shell: """ pythia --msa {input.phy} \
-       	   	      -r raxml-ng \
-		      --removeDuplicates \
-		      -o {output} """
+    shell: """ pythia --msa {input.phy} -r raxml-ng --removeDuplicates -o {output} """
 
 rule model_test:
     input: phy="all_genes.aln.trimmed.phy", pythia="all_genes.aln.pythia.out"
     output: "all_genes.trimmed.aln.phy.raxml.bestModel"
+    threads: config['modeltestng_threads']
     params: type=config['type']
     conda: "envs/phylo.yaml"
-    shell: """ modeltest-ng -i {input.phy} \ 
-    	       		    -d {params.type} \ 
-			    -t ml \
-			    -c \
-			    -T raxml """
+    shell: """ modeltest-ng -i {input.phy} -d {params.type} -t ml -c {threads} -T raxml """
 
 rule raxml:
     input: pythia="all_genes.aln.pythia.out",
@@ -78,21 +64,14 @@ rule raxml:
         ptn=config['parsimony_tree_number'],
         outgroup=config['outgroup']
 
-    shell: """ best_model=$(sed 's/.{{.*//g' all_genes.trimmed.aln.phy.raxml.bestModel)
-    	       raxml-ng --all \
-               		--msa all_genes.aln.trimmed.phy \
-			--model $best_model \
-			--tree rand{{params.rtn}}, pars{{params.ptn}} \
-			--threads {threads} \
-			--workers auto \
-			{{("--outgroup " + {params.outgroup}) if {params.outgroup} else ""}} """
+    shell: """ best_model=$(sed 's/.{{.*//g' all_genes.trimmed.aln.phy.raxml.bestModel) && raxml-ng --all --msa all_genes.aln.trimmed.phy --model $best_model --tree rand{{params.rtn}}, pars{{params.ptn}} --threads {threads} --workers auto {{("--outgroup " + {params.outgroup}) if {params.outgroup} else ""}} """
 
 rule midpoint_root:
     input: "all_genes.trimmed.aln.phy.raxml.support"
     output: "all_genes.trimmed.aln.phy.raxml.support.tree"
     run:
         if not re.search ("\w", config['outgroup']):
-            subprocess.run(["python3", "ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
+            subprocess.run(["python3", "/home/iasonas/snakemake/RAxML-NG-and-Friends/workflow/scripts/ETElib.py", "--tree", "all_genes.trimmed.aln.phy.raxml.support", "--midpoint"])
         else:
             subprocess.run(["cp", "all_genes.trimmed.aln.phy.raxml.support", "all_genes.trimmed.aln.phy.raxml.support.tree"])
 
@@ -100,4 +79,4 @@ rule midpoint_root:
 rule visualize_tree:
     input: "all_genes.trimmed.aln.phy.raxml.support.tree"
     output: "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
-    shell: """ python3 ETElib.py --tree {input} --visualize """
+    shell: """ python3 /home/iasonas/snakemake/RAxML-NG-and-Friends/workflow/scripts/ETElib.py --tree {input} --visualize """
