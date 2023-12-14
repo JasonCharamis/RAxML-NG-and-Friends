@@ -9,6 +9,8 @@ dependencies:
     - modeltest-ng
     - raxml-ng
 
-env:
-    PATH:
-        - scripts/
+
+script:
+  - mkdir -p /etc/conda/activate.d
+  - echo 'export PATH=scripts/:$PATH' > /etc/conda/activate.d/your_environment.sh
+  - chmod +x /etc/conda/activate.d/your_environment.sh
