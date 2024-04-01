@@ -8,7 +8,5 @@ dependencies:
     - pypythia
     - modeltest-ng
     - raxml-ng
-
-env:
-    PATH:
-        - scripts/
+    - ete3
+    - seaborn

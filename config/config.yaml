@@ -1,6 +1,0 @@
-trimal_threshold: 0.50
-raxmlng_threads: 40
-random_tree_number: 10
-parsimony_tree_number: 90
-type: aa
-outgroup: 'outgroup_taxon_ID' ## If this is an empty string, the tree is automatically midpoint-rooted.

@@ -1,29 +1,15 @@
-import os
-import re
-import subprocess
 
-
-include: "snakemake_utils.smk"
-
-###=============================================================== Snakemake Pipeline =========================================================================###
-
-if is_docker():
-     configfile: str( re.sub ("workflow.*","", find_repository_name(start_dir=".")) ) + "/config/config.yaml"
-else:
-     configfile: str( find_workflow_path(dir=".")) + "config/config.yaml"
-
-
-seqs = {f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa"))}
+seqs = { f for f in os.listdir(".") if f.endswith((".fasta", ".fa", ".faa")) }
 
 rule all:
-    input:
-        "all_genes.trimmed.aln.phy.raxml.support.tree",
-        "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
+     input:
+         "all_genes.trimmed.aln.phy.raxml.support.tree",
+	 "all_genes.trimmed.aln.phy.raxml.support.tree.svg"
 
 rule concatenate:
-    input: seqs=seqs
+    input: seqs = {seqs}
     output: all_fasta="all_genes.fasta"
-    shell: """ cat {input.seqs} > {output.all_fasta} """
+    shell: """ cat *.fasta *.fa *.faa > {output.all_fasta} """
 
 rule mafft:
     input: all_fasta="all_genes.fasta"
@@ -37,9 +23,9 @@ rule trimal:
     params: thr=config['trimal_threshold']
     conda: "envs/phylo.yaml"
     shell: """ trimal -in {input.aln} \
-    	       	      -out {output.trm} \ 
-		      -fasta \
-		      -gt {params.thr} """
+                      -out {output.trm} \ 
+                      -fasta \
+                      -gt {params.thr} """
 rule convert:
     input: trm="all_genes.aln.trimmed"
     output: phy="all_genes.aln.trimmed.phy"
@@ -52,9 +38,9 @@ rule pythia:
     output: "all_genes.aln.pythia.out"
     conda: "envs/phylo.yaml"
     shell: """ pythia --msa {input.phy} \
-       	   	      -r raxml-ng \
-		      --removeDuplicates \
-		      -o {output} """
+                      -r raxml-ng \
+                      --removeDuplicates \
+                      -o {output} """
 
 rule model_test:
     input: phy="all_genes.aln.trimmed.phy", pythia="all_genes.aln.pythia.out"
@@ -62,10 +48,10 @@ rule model_test:
     params: type=config['type']
     conda: "envs/phylo.yaml"
     shell: """ modeltest-ng -i {input.phy} \ 
-    	       		    -d {params.type} \ 
-			    -t ml \
-			    -c \
-			    -T raxml """
+                            -d {params.type} \ 
+                            -t ml \
+                            -c \
+                            -T raxml """
 
 rule raxml:
     input: pythia="all_genes.aln.pythia.out",
@@ -79,13 +65,13 @@ rule raxml:
         outgroup=config['outgroup']
 
     shell: """ best_model=$(sed 's/.{{.*//g' all_genes.trimmed.aln.phy.raxml.bestModel)
-    	       raxml-ng --all \
-               		--msa all_genes.aln.trimmed.phy \
-			--model $best_model \
-			--tree rand{{params.rtn}}, pars{{params.ptn}} \
-			--threads {threads} \
-			--workers auto \
-			{{("--outgroup " + {params.outgroup}) if {params.outgroup} else ""}} """
+               raxml-ng --all \
+                        --msa all_genes.aln.trimmed.phy \
+                        --model $best_model \
+                        --tree rand{{params.rtn}}, pars{{params.ptn}} \
+                        --threads {threads} \
+                        --workers auto \
+                        {{("--outgroup " + {params.outgroup}) if {params.outgroup} else ""}} """
 
 rule midpoint_root:
     input: "all_genes.trimmed.aln.phy.raxml.support"
